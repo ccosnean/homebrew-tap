@@ -3,8 +3,8 @@ class Lokishell < Formula
 
   desc "Separate work and personal CLI accounts by folder"
   homepage "https://github.com/ccosnean/lokishell"
-  url "https://github.com/ccosnean/lokishell/releases/download/v0.5.1/lokishell-0.5.1.tar.gz"
-  sha256 "299ed5518d01a0363e02b0c59789099c571f87969dd13dbc53dd3978773edb5b"
+  url "https://github.com/ccosnean/lokishell/releases/download/v0.6.0/lokishell-0.6.0.tar.gz"
+  sha256 "ee8e57b01e1ac889990237b6fa393ceaf31acef1f54b68697abfd93d501d3c0e"
   license "MIT"
 
   depends_on "direnv"
@@ -43,11 +43,17 @@ class Lokishell < Formula
     system bin/"loki", "tools", "validate"
     system bin/"loki", "create", "personal"
     system bin/"loki", "use", "personal", "--global", "--no-shell"
+    identity = JSON.parse(shell_output("#{bin}/loki who --json"))
+    assert_equal "personal", identity["persona"]
+    assert_equal "global", identity["source"]
+    assert_empty identity["tools"]
     system bin/"loki", "tools", "install", "firebase"
     assert_match "Validated 2 tool definitions", shell_output("#{bin}/loki tools validate")
     assert_match "Contribute your tool", shell_output("#{bin}/loki tools catalog")
     installed = JSON.parse(shell_output("#{bin}/loki tools list --json"))
     assert_equal ["firebase"], installed["tools"].map { |tool| tool["id"] }
+    identity = JSON.parse(shell_output("#{bin}/loki who --json"))
+    assert_equal ["firebase"], identity["tools"].map { |tool| tool["id"] }
     (testpath/"project").mkpath
     cd testpath/"project" do
       system bin/"loki", "use", "--no-shell"
@@ -56,6 +62,10 @@ class Lokishell < Formula
       system bin/"loki", "use", "work", "--no-shell"
       assert_match '"profile": "work"', shell_output("#{bin}/loki status")
       assert_empty JSON.parse(shell_output("#{bin}/loki status"))["tools"]
+      identity = JSON.parse(shell_output("#{bin}/loki who --json"))
+      assert_equal "work", identity["persona"]
+      assert_equal "folder", identity["source"]
+      assert_empty identity["tools"]
       system bin/"loki", "clean"
       refute_path_exists testpath/"project/.envrc"
       assert_match '"profile": "personal"', shell_output("#{bin}/loki status")
