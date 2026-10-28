@@ -1,0 +1,17 @@
+name: Homebrew install
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  install:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install from the tap
+        run: brew install --build-from-source ccosnean/tap/lokishell
+      - name: Check the formula
+        run: |
+          brew test ccosnean/tap/lokishell
+          loki --version
