@@ -17,7 +17,8 @@ class Lokishell < Formula
 
   def caveats
     <<~EOS
-      Run `loki init` in a project and choose personal or work.
+      Run `loki shift personal` to choose your global persona.
+      Use `loki init` in a project, or `loki use work` for a folder override.
       Open a fresh terminal once after the first shell setup.
       Use `loki add SERVICE` to connect accounts for that profile.
     EOS
