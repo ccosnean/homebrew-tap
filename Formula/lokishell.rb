@@ -3,8 +3,8 @@ class Lokishell < Formula
 
   desc "Separate work and personal CLI accounts by folder"
   homepage "https://github.com/ccosnean/lokishell"
-  url "https://github.com/ccosnean/lokishell/releases/download/v0.4.0/lokishell-0.4.0.tar.gz"
-  sha256 "0edec229dfd18c3c7bbc81940e69bdff78362f8eb9e9133bdadee217a1dca569"
+  url "https://github.com/ccosnean/lokishell/releases/download/v0.5.0/lokishell-0.5.0.tar.gz"
+  sha256 "cb78088bdf5fdf790eebd443331d98a64b82a358fd79fae0020ae756aa56331b"
   license "MIT"
 
   depends_on "direnv"
@@ -22,7 +22,7 @@ class Lokishell < Formula
     venv.pip_install resources
     bin.install "bin/loki"
     libexec.install "lib", "tools"
-    doc.install "README.md", "CONTRIBUTING.md", "requirements.txt"
+    doc.install "README.md", "CONTRIBUTING.md", "requirements.txt", "assets"
     inreplace bin/"loki", "#!/usr/bin/env python3", "#!#{libexec}/venv/bin/python"
   end
 
@@ -31,12 +31,12 @@ class Lokishell < Formula
       Run `loki use personal --global` to choose your global persona.
       Run `loki use` in a project, or `loki use work` for a folder override.
       Open a fresh terminal once after the first shell setup.
-      Use `loki tools list` to browse integrations and `loki add TOOL` to connect an account.
+      Use `loki tools catalog` to browse integrations and `loki add TOOL` to connect an account.
     EOS
   end
 
   test do
-    assert_match "LokiShell 0.4.0", shell_output("#{bin}/loki --version")
+    assert_match "LokiShell #{version}", shell_output("#{bin}/loki --version")
     ENV["LOKI_HOME"] = (testpath/"settings").to_s
     ENV["DIRENV_CONFIG"] = (testpath/"direnv").to_s
     ENV["XDG_DATA_HOME"] = (testpath/"data").to_s
@@ -45,7 +45,9 @@ class Lokishell < Formula
     system bin/"loki", "use", "personal", "--global", "--no-shell"
     system bin/"loki", "tools", "install", "firebase"
     assert_match "Validated 2 tool definitions", shell_output("#{bin}/loki tools validate")
-    assert_match "Contribute your tool", shell_output("#{bin}/loki tools list")
+    assert_match "Contribute your tool", shell_output("#{bin}/loki tools catalog")
+    installed = JSON.parse(shell_output("#{bin}/loki tools list --json"))
+    assert_equal ["firebase"], installed["tools"].map { |tool| tool["id"] }
     (testpath/"project").mkpath
     cd testpath/"project" do
       system bin/"loki", "use", "--no-shell"
