@@ -3,8 +3,8 @@ class Lokishell < Formula
 
   desc "Separate work and personal CLI accounts by folder"
   homepage "https://github.com/ccosnean/lokishell"
-  url "https://github.com/ccosnean/lokishell/releases/download/v0.5.0/lokishell-0.5.0.tar.gz"
-  sha256 "cb78088bdf5fdf790eebd443331d98a64b82a358fd79fae0020ae756aa56331b"
+  url "https://github.com/ccosnean/lokishell/releases/download/v0.5.1/lokishell-0.5.1.tar.gz"
+  sha256 "299ed5518d01a0363e02b0c59789099c571f87969dd13dbc53dd3978773edb5b"
   license "MIT"
 
   depends_on "direnv"
