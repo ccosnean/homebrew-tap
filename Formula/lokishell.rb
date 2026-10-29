@@ -3,8 +3,8 @@ class Lokishell < Formula
 
   desc "Separate work and personal CLI accounts by folder"
   homepage "https://github.com/ccosnean/lokishell"
-  url "https://github.com/ccosnean/lokishell/releases/download/v0.6.0/lokishell-0.6.0.tar.gz"
-  sha256 "ee8e57b01e1ac889990237b6fa393ceaf31acef1f54b68697abfd93d501d3c0e"
+  url "https://github.com/ccosnean/lokishell/releases/download/v0.7.0/lokishell-0.7.0.tar.gz"
+  sha256 "65d3b16fc756bead5043da84ea62594a335279c392810888a8e6e7f1fbc02fae"
   license "MIT"
 
   depends_on "direnv"
@@ -54,6 +54,21 @@ class Lokishell < Formula
     assert_equal ["firebase"], installed["tools"].map { |tool| tool["id"] }
     identity = JSON.parse(shell_output("#{bin}/loki who --json"))
     assert_equal ["firebase"], identity["tools"].map { |tool| tool["id"] }
+    ENV["XDG_CONFIG_HOME"] = (testpath/"independent-config").to_s
+    (testpath/"fake-bin").mkpath
+    (testpath/"fake-bin/firebase").write <<~SH
+      #!/bin/sh
+      printf '%s\\n' "$XDG_CONFIG_HOME"
+    SH
+    (testpath/"fake-bin/firebase").chmod 0755
+    ENV.prepend_path "PATH", testpath/"fake-bin"
+    scoped = shell_output <<~SH
+      eval "$(#{bin}/loki _env personal)"
+      printf '%s\\n' "$XDG_CONFIG_HOME"
+      firebase
+    SH
+    assert_equal [(testpath/"independent-config").to_s,
+                  (testpath/"settings/profiles/personal/xdg").to_s], scoped.lines.map(&:strip)
     (testpath/"project").mkpath
     cd testpath/"project" do
       system bin/"loki", "use", "--no-shell"
