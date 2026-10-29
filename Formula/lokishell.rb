@@ -3,8 +3,8 @@ class Lokishell < Formula
 
   desc "Separate work and personal CLI accounts by folder"
   homepage "https://github.com/ccosnean/lokishell"
-  url "https://github.com/ccosnean/lokishell/releases/download/v0.7.0/lokishell-0.7.0.tar.gz"
-  sha256 "65d3b16fc756bead5043da84ea62594a335279c392810888a8e6e7f1fbc02fae"
+  url "https://github.com/ccosnean/lokishell/releases/download/v0.7.1/lokishell-0.7.1.tar.gz"
+  sha256 "18c7727eac1ad91a8d978ac5850188ebf8ba14ce3f29e91895a22fd4f35b0e1e"
   license "MIT"
 
   depends_on "direnv"
@@ -31,6 +31,7 @@ class Lokishell < Formula
       Run `loki use personal --global` to choose your global persona.
       Run `loki use` in a project, or `loki use work` for a folder override.
       Open a fresh terminal once after the first shell setup.
+      When upgrading from 0.7.0, run `loki setup` once in your regular terminal before starting agents.
       Use `loki tools catalog` to browse integrations and `loki add TOOL` to connect an account.
     EOS
   end
